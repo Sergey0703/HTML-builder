@@ -21,13 +21,16 @@ rl.on('line', (answer) => {
     if(error) throw error; 
   });
 }
-process.on('beforeExit',() => {
+/*process.on('beforeExit',() => {
     //await something()
-    console.log('Good bye!');
+    console.log('Goodbye!');
+    rl.close();
     process.exit(0); 
 });
+*/
 process.on('exit',() => {
-    console.log('Good bye!!!');
+    console.log('Goodbye!!!');
+    rl.close();
     process.exit(0); 
 });
 
