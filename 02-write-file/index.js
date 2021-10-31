@@ -17,7 +17,7 @@ rl.on('line', (answer) => {
   function wrToFile(mess){
    // fs.writeFile('/Users/joe/test.txt', content, { flag: 'a+' }, err => {})
    if(mess==='exit') process.exit(0);
-  fs.appendFile(path.join(__dirname,'text.txt'), mess, function(error){
+  fs.appendFile(path.join(__dirname,'text.txt'), `${mess}\n`, function(error){
     if(error) throw error; 
   });
 }
