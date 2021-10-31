@@ -22,9 +22,18 @@ async function getFiles(file){
       size= await fs.promises.stat(pathName).then(stat => {
          return stat.size;
       });
-
-      console.log(file.name ,' extn:',path.extname(file.name), ' size: ',size);
+      let fName=file.name.substr(0,file.name.lastIndexOf(path.extname(file.name)) );
+      let fExt=file.name.substr(file.name.lastIndexOf(path.extname(file.name))+1 );
+      console.log(fName ,'-',fExt, '-',getSize(size));
 
     }   
 
- 
+    function getSize( bytes ){
+      if      (bytes>=1073741824) {bytes=(bytes/1073741824).toFixed(2)+' Gb';}
+      else if (bytes>=1048576)    {bytes=(bytes/1048576).toFixed(2)+' Mb';}
+      else if (bytes>=1024)       {bytes=(bytes/1024).toFixed(2)+' kb';}
+      else if (bytes>1)           {bytes=bytes+' bytes';}
+      else if (bytes==1)          {bytes=bytes+' byte';}
+      else                        {bytes='0 byte';}
+      return bytes;
+}
