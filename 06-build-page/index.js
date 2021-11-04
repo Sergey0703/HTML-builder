@@ -1,9 +1,10 @@
 const fs=require('fs');
 const fsp=require('fs').promises;
-//const copyFile =require('fs/promises');
 const path=require('path');
 let allDir=[];
 let allFiles=[];
+let allFilesCss=[];
+let allCss=[];
 
 async function main(){
    await makeDir('project-dist');
@@ -31,10 +32,19 @@ async function main(){
       await copyFiles(file, dir);
    }
    }
+   await readDirect(__dirname,'/styles','css');
+   for await(const file of allFilesCss) {
+    allCss.push(await readF(file));
+  }
 
+  fs.appendFile(path.join(__dirname,'/project-dist/style.css'), allCss.join(''), function(error){
+    if(error) throw error; 
+  });
 
 }
 main();
+
+
 
 async function readDirect(rootDir,dir,opt){
     try{
@@ -45,43 +55,19 @@ async function readDirect(rootDir,dir,opt){
                 console.log('dir=',path.join(dir, file.name));
                 allDir.push(path.join(file.name));
                 allFiles[file.name]=[];
-               // allFiles.push(path.join(file.name));
-               // await readDirect(path.join(dir, file.name));
-            
             }else if((file.isDirectory()===false)&&(opt==='file')){
                 console.log('dir=',dir, ' file=',path.join(rootDir, dir, file.name)); 
                 allFiles[dir].push(file.name);
-               // allFiles[dir].push(0);
-               // allFiles{dir:};
-
+            }else if((file.isDirectory()===false)&&(opt==='css')){
+                console.log('dir=',dir, ' file=',path.join(rootDir, dir, file.name)); 
+                allFilesCss.push(file.name);
             }
         }
        }catch(err){
           console.log(err);
        }
-      
-  /*  await fs.promises.readdir(dir, 
-    { withFileTypes: true },
-    (err, files) => {
-    console.log("\nCurrent directory files:");
-    console.log(files);
-    if (err)
-      console.log(err);
-    else {
-        for (let file of files) {
-            if(file.isDirectory()===true){
-                console.log('dir=',path.join(dir, file.name));
-                allDir.push(path.join(dir, file.name));
-                readDirect(path.join(dir, file.name));
-                return;
-              //  await makeDir(file.name);
-               // copyFiles(file);
-             }
-    }
-    }
-})
-*/
 }
+
 async function makeDir(dist){
     try { 
     await fs.promises.mkdir(path.join(__dirname,`${dist}`),{ recursive: true });
@@ -89,26 +75,26 @@ async function makeDir(dist){
      }catch(err){
                console.log(err);
      }
-       /* await fs.promises.mkdir(path.join(__dirname,`${dist}`),{ recursive: true }, (err) => {
-           if (err) {
-             return console.error(err);
-           }
-          // console.log(`Directory created: ${dist} !!!`);
-         });
-         */
-        
 }
 
 async function copyFiles(file,dir){
-    
        // let pathName=path.join(__dirname,`/assets/${file.name}`);
        // let distPath=path.join(__dirname,`/project-dist/assets/${file.name}`);
        try{
         await fs.promises.copyFile(path.join(__dirname,`/assets/${dir}`,file),path.join(__dirname,`/project-dist/assets/${dir}`,file)); //(err) => {
-        //if (err) throw err;
         console.log(`${file} was copied `);
       }
        catch(err){
         console.log(err);
        }
 }
+
+async function readF(file){
+   let stream = fs.ReadStream(path.join(__dirname, `/styles/${file}`));
+   const chunks = [];
+   for await (const chunk of stream) {
+   chunks.push(chunk);
+   return chunk.toString(); 
+   }
+}
+
