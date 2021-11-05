@@ -34,12 +34,30 @@ async function main(){
    }
    await readDirect(__dirname,'/styles','css');
    for await(const file of allFilesCss) {
-    allCss.push(await readF(file));
+    allCss.push(await readF(path.join(__dirname, `/styles/${file}`)));
   }
 
-  fs.appendFile(path.join(__dirname,'/project-dist/style.css'), allCss.join(''), function(error){
+  await fs.promises.appendFile(path.join(__dirname,'/project-dist/style.css'), allCss.join(''), function(error){
     if(error) throw error; 
   });
+   console.log('made style.css');
+
+   let templ =await readF(path.join(__dirname,'template.html'));
+  // console.log(templ);
+   let header =await readF(path.join(__dirname,'/components/header.html'));
+   let articles =await readF(path.join(__dirname,'/components/articles.html'));
+   let footer =await readF(path.join(__dirname,'/components/footer.html'));
+
+   let result = templ.replace('{{header}}', `${header}`);
+   result = result.replace('{{articles}}', `${articles}`);
+   result = result.replace('{{footer}}', `${footer}`);
+
+   //console.log('result=',result);
+
+   await fs.promises.appendFile(path.join(__dirname,'/project-dist/index.html'), `${result}`, function(error){
+    if(error) throw error; 
+  });
+
 
 }
 main();
@@ -90,11 +108,11 @@ async function copyFiles(file,dir){
 }
 
 async function readF(file){
-   let stream = fs.ReadStream(path.join(__dirname, `/styles/${file}`));
+   let stream = fs.ReadStream(file);
    const chunks = [];
    for await (const chunk of stream) {
    chunks.push(chunk);
-   return chunk.toString(); 
+   return chunk.toString().trim(); 
    }
 }
 
