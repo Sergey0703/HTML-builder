@@ -21,9 +21,12 @@ async function main(){
     arrCss.push(await readF(file));
   }
 
-  fs.appendFile(path.join(__dirname,'/project-dist/bundle.css'), arrCss.join(''), function(error){
+  // fs.appendFile(path.join(__dirname,'/project-dist/bundle.css'), arrCss.join(''), function(error){
+  //  if(error) throw error; 
+  // });
+  await fs.promises.writeFile(path.join(__dirname,'/project-dist/bundle.css'), arrCss.join(''), { flag: 'w' }, error => {
     if(error) throw error; 
-  });
+   });
 }
      
 main();

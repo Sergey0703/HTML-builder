@@ -37,9 +37,13 @@ async function main(){
     allCss.push(await readF(path.join(__dirname, `/styles/${file}`)));
   }
 
-  await fs.promises.appendFile(path.join(__dirname,'/project-dist/style.css'), allCss.join(''), function(error){
+ // await fs.promises.appendFile(path.join(__dirname,'/project-dist/style.css'), allCss.join(''), function(error){
+ //   if(error) throw error; 
+ // });
+
+  await fs.promises.writeFile(path.join(__dirname,'/project-dist/style.css'), allCss.join(''), { flag: 'w' }, error => {
     if(error) throw error; 
-  });
+   });
    console.log('made style.css');
 
    let templ =await readF(path.join(__dirname,'template.html'));
@@ -53,10 +57,12 @@ async function main(){
    result = result.replace('{{footer}}', `${footer}`);
 
    //console.log('result=',result);
-
-   await fs.promises.appendFile(path.join(__dirname,'/project-dist/index.html'), `${result}`, function(error){
+   await fs.promises.writeFile(path.join(__dirname,'/project-dist/index.html'), `${result}`, { flag: 'w' }, error => {
     if(error) throw error; 
-  });
+   });
+  // await fs.promises.appendFile(path.join(__dirname,'/project-dist/index.html'), `${result}`, function(error){
+  //  if(error) throw error; 
+  //});
 
 
 }
